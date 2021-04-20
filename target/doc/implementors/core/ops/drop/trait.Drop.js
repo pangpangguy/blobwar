@@ -1,0 +1,4 @@
+(function() {var implementors = {};
+implementors["itertools"] = [{"text":"impl&lt;'a, K, I, F&gt; Drop for Group&lt;'a, K, I, F&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;I: Iterator,<br>&nbsp;&nbsp;&nbsp;&nbsp;I::Item: 'a,&nbsp;</span>","synthetic":false,"types":[]},{"text":"impl&lt;'a, I&gt; Drop for Chunk&lt;'a, I&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;I: Iterator,<br>&nbsp;&nbsp;&nbsp;&nbsp;I::Item: 'a,&nbsp;</span>","synthetic":false,"types":[]}];
+implementors["syn"] = [{"text":"impl&lt;'a&gt; Drop for ParseBuffer&lt;'a&gt;","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
