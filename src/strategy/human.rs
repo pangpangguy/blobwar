@@ -33,17 +33,18 @@ fn ask_cell() -> Result<(u8, u8), io::Error> {
 }
 
 fn ask_move() -> Result<Movement, io::Error> {
-    println!("enter start point");
+    println!("Enter start point");
     let (sx, sy) = ask_cell()?;
     let start_position = Position::from_2d(sx, sy);
-    println!("enter end point");
+    println!("Enter end point");
     let (ex, ey) = ask_cell()?;
     let end_position = Position::from_2d(ex, ey);
+    //Check that the distance between the 2 points is either 1 or 2
     match start_position.distance_to(end_position) {
         1 => Ok(Movement::Duplicate(end_position)),
         2 => Ok(Movement::Jump(start_position, end_position)),
         _ => {
-            println!("invalid movement");
+            println!("Invalid movement. Please enter a valid move.");
             ask_move()
         }
     }
@@ -53,7 +54,9 @@ impl Strategy for Human {
     fn compute_next_move(&mut self, configuration: &Configuration) -> Option<Movement> {
         if configuration.movements().next().is_some() {
             loop {
+                //Check distance OK
                 if let Ok(movement) = ask_move() {
+                    //Check position to travel to is valid in board
                     if configuration.check_move(&movement) {
                         return Some(movement);
                     } else {
