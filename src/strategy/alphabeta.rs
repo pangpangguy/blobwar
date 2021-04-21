@@ -26,8 +26,29 @@ impl fmt::Display for AlphaBeta {
     }
 }
 
+fn alphabeta(state: &Configuration, rec_depth: u8, alpha: i8, beta: i8) -> (i8, Option<Movement>) {
+    if rec_depth == 0 || state.movements().next().is_none() {
+        return (state.value(), None);
+    }
+    let mut best_score = 65;
+    let mut best_mv = None;
+    for m in state.movements() {
+        let (mv_score, mv) = alphabeta(&state.play(&m), rec_depth - 1, alpha, beta);
+        if -mv_score < best_score {
+            best_score = -mv_score;
+            best_mv = mv;
+
+            //On vérifie si cette nouvelle best_score du noeud est meilleur (inf à beta)
+
+            //On vérifie si
+        }
+    }
+    //  println!("{:?}", (best_score, overall_best_mv));
+    (best_score, best_mv)
+}
 impl Strategy for AlphaBeta {
     fn compute_next_move(&mut self, state: &Configuration) -> Option<Movement> {
-        unimplemented!("implementer alpha beta")
+        let (score, mv) = alphabeta(state, self.0, 65, 65);
+        mv
     }
 }

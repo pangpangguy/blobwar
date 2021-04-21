@@ -10,19 +10,12 @@ use std::fmt; // 0.7.2
 /// immediate value.
 pub struct Greedy();
 
-///Randomized version of Greedy
-pub struct RandomizedGreedy();
-
 impl fmt::Display for Greedy {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Greedy")
     }
 }
-impl fmt::Display for RandomizedGreedy {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "RandomizedGreedy")
-    }
-}
+
 impl Strategy for Greedy {
     fn compute_next_move(&mut self, state: &Configuration) -> Option<Movement> {
         //Scenario 1: Skip this turn
@@ -31,7 +24,7 @@ impl Strategy for Greedy {
         //Get the value of config of this move (skipping).
         //skip_play is used again to inverse current_player attribute in configuration
         let mut best_value = state_after_skip.skip_play().value();
-
+        println!("Skip value: {:?}", &best_value);
         //Scenario 2: Make a move this turn
         //Iterate through all possible movements, for each of them calculate their value.
         //Retain the move with the lowest value. (or if there are multiple, retain only the first lowest)
@@ -59,10 +52,19 @@ impl Strategy for Greedy {
         println!("{:?}", all_moves);
         println!("{:?}", all_moves_values);
         */
+        println!("Best value: {:?}", &best_value);
         best_move
     }
 }
 
+///Randomized version of Greedy
+pub struct RandomizedGreedy();
+
+impl fmt::Display for RandomizedGreedy {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "RandomizedGreedy")
+    }
+}
 //Greedy but randomly chooses a move when there are multiple best values
 impl Strategy for RandomizedGreedy {
     fn compute_next_move(&mut self, state: &Configuration) -> Option<Movement> {
