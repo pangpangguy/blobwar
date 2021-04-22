@@ -26,29 +26,69 @@ impl fmt::Display for AlphaBeta {
     }
 }
 
-fn alphabeta(state: &Configuration, rec_depth: u8, alpha: i8, beta: i8) -> (i8, Option<Movement>) {
+//Beta - Le meilleur (minimum) score garanti pour le minimisesr (Nous)
+//Alpha - Le meilleur (maximum) score garanti pour le maximiser (L'adversaire)
+fn alphabeta(
+    state: &Configuration,
+    rec_depth: u8,
+    mut alpha: i8,
+    mut beta: i8,
+    is_minimizer: bool,
+) -> (i8, Option<Movement>) {
     if rec_depth == 0 || state.movements().next().is_none() {
         return (state.value(), None);
     }
-    let mut best_score = 65;
-    let mut best_mv = None;
-    for m in state.movements() {
-        let (mv_score, mv) = alphabeta(&state.play(&m), rec_depth - 1, alpha, beta);
-        if -mv_score < best_score {
-            best_score = -mv_score;
-            best_mv = mv;
 
-            //On vérifie si cette nouvelle best_score du noeud est meilleur (inf à beta)
+    //Minimiser
+    if is_minimizer {
+        let mut best_score = 65;
+        let mut best_move = None;
+        for mv in state.movements() {
+            let (mut score, _) = alphabeta(&state.play(&mv), rec_depth - 1, alpha, beta, false);
+            score *= -1; //Inverser le signe pour obtenir notre score. On cherche à minimser ce score
+            if score < best_score {
+                best_score = score;
+                best_move = Some(mv);
+            }
 
-            //On vérifie si
+            //Mise à jour beta
+            if score < beta {
+                beta = score;
+            }
+
+            //Si le maximiser est garanti d'une valeur (alpha) meilleure (plus) que ce qu'on (le minimiser)
+            //peut avoir dans ce noeud, le maximiser va choisir le noeud de alpha donc c'est inutile de
+            //explorer les noeud fils restants
+            if beta <= alpha {
+                break;
+            }
         }
+        (best_score, best_move)
+    } else {
+        //Maximiser (l'adversaire)
+        let mut best_score = -65;
+        let mut best_move = None;
+        for mv in state.movements() {
+            let (score, _) = alphabeta(&state.play(&mv), rec_depth - 1, alpha, beta, true);
+            if score > best_score {
+                best_score = score;
+                best_move = Some(mv);
+            }
+
+            if score > alpha {
+                alpha = score;
+            }
+            if beta <= alpha {
+                break;
+            }
+        }
+
+        (-best_score, best_move) //On renvoiee au minimiser le score de l'adversaire (donc inversion de signe)
     }
-    //  println!("{:?}", (best_score, overall_best_mv));
-    (best_score, best_mv)
 }
 impl Strategy for AlphaBeta {
     fn compute_next_move(&mut self, state: &Configuration) -> Option<Movement> {
-        let (score, mv) = alphabeta(state, self.0, 65, 65);
+        let (score, mv) = alphabeta(state, self.0, -65, 65, true);
         mv
     }
 }
