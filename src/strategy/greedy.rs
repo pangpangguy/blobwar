@@ -18,17 +18,10 @@ impl fmt::Display for Greedy {
 
 impl Strategy for Greedy {
     fn compute_next_move(&mut self, state: &Configuration) -> Option<Movement> {
-        //Scenario 1: Skip this turn
-        let state_after_skip = state.skip_play();
-
-        //Get the value of config of this move (skipping).
-        //skip_play is used again to inverse current_player attribute in configuration
-        let mut best_value = state_after_skip.skip_play().value();
-        println!("Skip value: {:?}", &best_value);
-        //Scenario 2: Make a move this turn
         //Iterate through all possible movements, for each of them calculate their value.
         //Retain the move with the lowest value. (or if there are multiple, retain only the first lowest)
         //best_move starts with None (skip play)
+        let mut best_value = 65;
         let mut best_move = None;
         for mv in state.movements() {
             let state_after_move = state.play(&mv);
@@ -39,20 +32,6 @@ impl Strategy for Greedy {
                 best_move = Some(mv);
             }
         }
-
-        /*
-        let all_moves: Vec<_> = state.movements().collect();
-        let all_moves_values: Vec<_> = state
-            .movements()
-            .map(|x| {
-                let statez = state.play(&x);
-                statez.skip_play().value()
-            })
-            .collect();
-        println!("{:?}", all_moves);
-        println!("{:?}", all_moves_values);
-        */
-        println!("Best value: {:?}", &best_value);
         best_move
     }
 }

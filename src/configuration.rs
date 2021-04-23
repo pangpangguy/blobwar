@@ -5,6 +5,7 @@ use super::strategy::Strategy;
 use serde_derive::{Deserialize, Serialize};
 use std::fmt;
 use std::iter::once;
+use std::time::{Duration, Instant};
 use term;
 
 #[derive(Serialize, Deserialize, Debug, Copy, Clone, PartialEq, Eq)]
@@ -153,6 +154,48 @@ impl<'a> Configuration<'a> {
         println!("GAME OVER (red value of {})", value);
     }
 
+    /// Play a match but doesn't display match on screen. Also calculates time taken
+    pub fn battle_no_display<T: Strategy, U: Strategy>(
+        &mut self,
+        mut player_one: T,
+        mut player_two: U,
+    ) -> (i8, Vec<f32>) {
+        let mut time_taken = Vec::new();
+        while !self.game_over() {
+            let play_attempt = if self.current_player {
+                player_two.compute_next_move(self)
+            } else {
+                let start = Instant::now();
+                let mv: Option<Movement> = player_one.compute_next_move(self);
+                time_taken.push(start.elapsed().as_secs_f32());
+                mv
+            };
+            if let Some(ref next_move) = play_attempt {
+                assert!(self.check_move(next_move));
+                self.apply_movement(next_move);
+            } else {
+                self.current_player = !self.current_player;
+            }
+        }
+
+        let value = self.blobs[0].len() - self.blobs[1].len();
+        let output: i8;
+        match value {
+            x if x > 0 => {
+                //Red wins
+                output = 1;
+            }
+            x if x < 0 => {
+                //Blue wins
+                output = -1;
+            }
+            _ => {
+                //Draw
+                output = 0;
+            }
+        }
+        (output, time_taken)
+    }
     /// Return true if no empty space remains or someone died.
     fn game_over(&self) -> bool {
         self.blobs[0].is_empty()
