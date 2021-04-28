@@ -10,14 +10,14 @@ fn main() {
     let board = Default::default();
     let mut game = Configuration::new(&board);
     print!("Starting game...");
-    // game.battle(MinMax(2), RandomizedGreedy());
-    test_algo(1);
+    game.battle(AlphaBeta(6), AlphaBeta(2));
+    //test_algo(10);
 }
 
 //Function for testing purposes
+//Prints outcome on terminal. +1 = Red wins, -1 = Blue wins, 0 = Draw
 pub fn test_algo(nb_test: u64) {
     let mut results: Vec<i8> = Vec::new();
-    let mut time_taken: Vec<Duration> = Vec::new();
     for i in 0..nb_test {
         let board = Default::default();
         let mut game = Configuration::new(&board);
@@ -25,10 +25,8 @@ pub fn test_algo(nb_test: u64) {
         let (outcome, compute_duration) = game.battle_no_display(AlphaBeta(4), RandomizedGreedy());
         //Result of the game
         results.push(outcome);
-        //Calculate average time taken to compute move (for first player)
-        println!("Results : {:?}", compute_duration);
+
+        println!("Time taken for this game : {:?}", compute_duration);
     }
     println!("Test Completed");
-    println!("Results : {:?}", results);
-    println!("Results : {:?}", time_taken);
 }

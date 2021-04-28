@@ -64,7 +64,7 @@ fn minimaxV2(state: &Configuration, rec_depth: u8) -> (i8, Option<Movement>) {
         mv_score *= -1;
         if mv_score < best_score {
             best_score = mv_score;
-            best_mv = Soeme(m);
+            best_mv = Some(m);
         }
     }
     (best_score, best_mv)
